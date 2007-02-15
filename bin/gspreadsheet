@@ -1,0 +1,95 @@
+#!/usr/bin/env ruby
+
+require 'net/http'
+require 'net/https'
+require 'uri'
+require 'rubygems'
+require 'hpricot'
+
+#
+# Make it east to use some of the convenience methods using https
+#
+module Net
+  class HTTPS < HTTP
+    def initialize(address, port = nil)
+      super(address, port)
+      self.use_ssl = true
+    end
+  end
+end
+
+class GoogleSpreadSheet
+  GOOGLE_LOGIN_URL = URI.parse('https://www.google.com/accounts/ClientLogin')
+
+  def initialize(spreadsheet_key)
+    @spreadsheet_key = spreadsheet_key
+    @headers = nil
+  end
+
+  def authenticate(email, password)
+    $VERBOSE = nil
+    response = Net::HTTPS.post_form(GOOGLE_LOGIN_URL,
+      {'Email'   => email,
+       'Passwd'  => password,
+       'source'  => "formula",
+       'service' => 'wise' })
+    @headers = {
+     'Authorization' => "GoogleLogin auth=#{response.body.split(/=/).last}",
+     'Content-Type'  => 'application/atom+xml'
+    }
+  end
+
+  def evaluate_cell(cell)
+    path = "/feeds/cells/#{@spreadsheet_key}/1/#{@headers ? "private" : "public"}/basic/#{cell}"
+
+    doc = Hpricot(request(path))
+    result = (doc/"content[@type='text']").inner_html
+  end
+
+  def set_entry(entry)
+    path = "/feeds/cells/#{@spreadsheet_key}/1/#{@headers ? 'private' : 'public'}/full"
+
+    post(path, entry)
+  end
+
+  def entry(formula, row=1, col=1)
+    <<XML
+<?xml version='1.0' ?>
+<entry xmlns='http://www.w3.org/2005/Atom' xmlns:gs='http://schemas.google.com/spreadsheets/2006'>
+  <gs:cell row='#{row}' col='#{col}' inputValue='=#{formula}' />
+</entry>
+XML
+  end
+
+  def add_to_cell(formula)
+    #puts entry(formula)
+    set_entry(entry(formula))
+  end
+
+  private
+  def request(path)
+    response, data = get_http.get(path, @headers)
+    data
+  end
+
+  def post(path, entry)
+    get_http.post(path, entry, @headers)
+  end
+
+  def get_http
+    http = Net::HTTP.new('spreadsheets.google.com', 80)
+    #http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    #http.set_debug_output $stderr
+    http
+  end
+end
+
+if __FILE__ == $0 
+  formula = ARGV.first || 'sin(0.2)'
+  
+  gs = GoogleSpreadSheet.new('pSYwzniwpzSFfn0KFRg9oWA')
+  gs.authenticate('dalmaer@gmail.com', 'vi!google')
+  gs.add_to_cell formula
+  puts gs.evaluate_cell('A1')
+end
+
