@@ -54,7 +54,6 @@ class GoogleSpreadSheet
 
   def entry(formula, row=1, col=1)
     <<XML
-<?xml version='1.0' ?>
 <entry xmlns='http://www.w3.org/2005/Atom' xmlns:gs='http://schemas.google.com/spreadsheets/2006'>
   <gs:cell row='#{row}' col='#{col}' inputValue='=#{formula}' />
 </entry>
@@ -78,7 +77,6 @@ XML
 
   def get_http
     http = Net::HTTP.new('spreadsheets.google.com', 80)
-    #http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     #http.set_debug_output $stderr
     http
   end
