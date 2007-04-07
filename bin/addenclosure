@@ -6,7 +6,7 @@
 require 'gdata/blogger'
 
 unless ENV['GDATA_USER'] and ENV['GDATA_PASS']
-  puts "$0 requires GDATA_USER and GDATA_PASS to be set"
+  puts "#{$0} requires GDATA_USER and GDATA_PASS to be set"
   exit
 end
 
