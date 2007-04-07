@@ -1,3 +1,9 @@
+== 0.0.2 / 2007-04-06
+
+* Finally get some of the simple stuff out there
+  * Blogger and Spreadsheet support
+  * Core GData::Base support
+
 == 0.0.1 / 2007-02-13
 
 * 1 major enhancement

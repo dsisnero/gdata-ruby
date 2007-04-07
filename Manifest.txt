@@ -2,6 +2,12 @@ History.txt
 Manifest.txt
 README.txt
 Rakefile
+bin/addenclosure
+bin/bloggerfeed
 bin/gspreadsheet
-lib/gdata_ruby.rb
-test/test_gdata_ruby.rb
+bin/removeenclosure
+lib/gdata.rb
+lib/gdata/base.rb
+lib/gdata/blogger.rb
+lib/gdata/spreadsheet.rb
+test/test_gdata.rb

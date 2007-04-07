@@ -1,7 +1,0 @@
-History.txt
-Manifest.txt
-README.txt
-Rakefile
-bin/gspreadsheet
-lib/gdata_ruby.rb
-test/test_gdata_ruby.rb
