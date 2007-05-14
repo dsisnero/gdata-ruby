@@ -29,7 +29,7 @@ module GData
     def add_enclosure(enclosure_url, enclosure_length)
       raise "An enclosure has already been added to this entry" if enclosure?
 
-      entry.search('//entry').append(qq|<link rel="enclosure" type="audio/mpeg" title="MP3" href="#{enclosure_url}" length="#{enclosure_length}" />|)
+      entry.search('//entry').append(%Q{<link rel="enclosure" type="audio/mpeg" title="MP3" href="#{enclosure_url}" length="#{enclosure_length}" />})
       save_entry
     end
 
