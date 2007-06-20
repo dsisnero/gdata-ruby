@@ -4,6 +4,7 @@ README.txt
 Rakefile
 bin/addenclosure
 bin/bloggerfeed
+bin/bloggerpost
 bin/gspreadsheet
 bin/removeenclosure
 lib/gdata.rb

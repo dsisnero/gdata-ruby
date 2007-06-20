@@ -1,4 +1,5 @@
 require 'gdata/base'
+require 'builder'
 
 module GData
 
@@ -28,7 +29,7 @@ module GData
   
     def add_enclosure(enclosure_url, enclosure_length)
       raise "An enclosure has already been added to this entry" if enclosure?
-
+      # todo(stevejenson): replace with builder
       entry.search('//entry').append(%Q{<link rel="enclosure" type="audio/mpeg" title="MP3" href="#{enclosure_url}" length="#{enclosure_length}" />})
       save_entry
     end
@@ -44,6 +45,21 @@ module GData
       path = "/feeds/#{@blog_id}/posts/default/#{@entry_id}"
   
       put(path, entry.to_s)
+    end
+
+    # Creates a new entry with the given title and body
+    def entry(title, body)
+      x = Builder::XmlMarkup.new :indent => 2
+      x.entry 'xmlns' => 'http://www.w3.org/2005/Atom' do
+        x.title title, 'type' => 'text'
+        x.content 'type' => 'xhtml' do
+          x.div body, 'xmlns' => 'http://www.w3.org/1999/xhtml'
+        end
+      end
+      
+      @entry ||= x
+      path = "/feeds/#{@blog_id}/posts/default"
+      post(path, entry.to_s)
     end
 
   end
