@@ -64,7 +64,7 @@ module GData
     # interface.  
 	# TODO: add a variable to either be 'clientLogin' or 'AuthSub' for the 
 	# type of authentication method
-    def authenticate(email, password)
+    def authenticate(email, passwd)
       req = Net::HTTP::Post.new(CLIENTLOGIN_URI.path)
       req.set_form_data(
   	{'Email' => email,
