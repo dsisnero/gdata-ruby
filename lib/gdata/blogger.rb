@@ -84,9 +84,9 @@ module GData
         end
       end
       
-      @entry ||= x
+      @entry ||= x.target!
       path = "/feeds/#{@blog_id}/posts/default"
-      post(path, entry.to_s)
+      post(path, @entry)
     end
 
   end

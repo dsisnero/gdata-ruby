@@ -57,7 +57,7 @@ module GData
       @url = Net::HTTP.new(url, 80)
       # Put out any debug messages to stderr, so we can see if anything goes
       # awry.
-      @url.set_debug_output $stderr
+#      @url.set_debug_output $stderr
     end
 
     # Authenticate the user through the Google ClientLogin Authentication
