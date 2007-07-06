@@ -1,4 +1,4 @@
-require 'gdata/base'
+require 'gdata/client'
 require 'builder'
 require 'hpricot'
 require 'rexml/document'

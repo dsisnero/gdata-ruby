@@ -1,8 +1,8 @@
-require 'gdata/base'
+require 'gdata/client'
 
 module GData
 
-  class Spreadsheet < GData::Base
+  class Spreadsheet < GData::Client
 
     def initialize(spreadsheet_id)
       @spreadsheet_id = spreadsheet_id

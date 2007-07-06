@@ -8,7 +8,7 @@ bin/bloggerpost
 bin/gspreadsheet
 bin/removeenclosure
 lib/gdata.rb
-lib/gdata/base.rb
+lib/gdata/client.rb
 lib/gdata/blogger.rb
 lib/gdata/spreadsheet.rb
 test/test_gdata.rb
