@@ -47,7 +47,7 @@ module GData
     AUTHSUB_URI = URI.parse('https://www.google.com/accounts/AuthSubRequest')
     # It is best to be able to remember what program you're using, so you can
     # check later.
-    attr_reader :service, :source, :url
+    attr_reader :service, :source, :url, :authenticated
      
     # Creates a new instance of the Client class, which prepares the connection
     # to the service.
@@ -58,6 +58,7 @@ module GData
       # Put out any debug messages to stderr, so we can see if anything goes
       # awry.
       @url.set_debug_output $stderr
+      @authenticated = false
     end
 
     # Authenticate the user through the Google ClientLogin Authentication
@@ -88,6 +89,7 @@ module GData
 	  'Authorization' => "GoogleLogin auth=#{response_data["Auth"]}",
 	  'Content-Type' => 'application/atom+xml'
         }
+	@authenticaed = true
       when Net::HTTPForbidden
 	# Check to see whether or not we've received a Captcha challenge, and
 	# raise the CAPTCHAException if we have.
@@ -104,6 +106,9 @@ module GData
     # TODO: An AuthSub-style authentication procedure will be set up here,
     # for all you naughty little rails programmers. :)
     
+    def authenticated?
+      @authenticated
+    end
 
     # Sends an HTTP GET request to the url specified in the instantiation of
     # the class.

@@ -8,29 +8,31 @@ module GData
   class Blogger < GData::Client
     attr_reader :blog_id, :entry_id, :blogs, :posts
     # Default initialization method.  The blog ID and the entry ID may 
-    # or may not be known ahead of time.
-    def initialize(username, password, blog_id=nil, entry_id=nil)
+    # or may not be known ahead of time.  Be sure to authenticate if needed.
+    def initialize(blog_id=nil, entry_id=nil)
       super 'blogger', 'gdata-ruby', 'www.blogger.com'
-      authenticate(username, password)
       @entry_id = entry_id unless entry_id==nil
-      retrieve_blog_list unless blog_id != nil
     end
     
     # Pull down a list of the user's blogs.  This allows the use of muliple
     # blogs per user.  The @blogs Array will store the available blogs by
-    # internal hash.
+    # internal hash. Requires user to be authenticated.
     # ex. @blogs[0] = {"Blog Name" => "blog_id(a string of numbers)"}
     # returns @blogs - an outer program can use this to set the blog id using
     # the set_blog_id method.
     def retrieve_blog_list
-      # retrieve the user's list of blogs from 
+      # retrieve the user's list of blogs from the server.
+      if authenticated? {
       blog_feed = get('/feeds/default/blogs')
       @blogs = Array.new
       REXML::Document.new(blog_feed[1]).root.elements.each('entry') do |entry|
         @blogs.push(entry.elements['id'].get_text.to_s.split(/blog-/).last)
       end
       set_blog_id(@blogs[0]) # set the initial blog ID to the first blog.
-      @blogs
+      @blogs}
+      else puts "Not authenticated."
+      end
+
     end
 
     # Sets the current blog_id to the specified blog - use the @blogs variable
