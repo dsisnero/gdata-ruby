@@ -89,7 +89,7 @@ module GData
 	  'Authorization' => "GoogleLogin auth=#{response_data["Auth"]}",
 	  'Content-Type' => 'application/atom+xml'
         }
-	@authenticaed = true
+	@authenticated = true
       when Net::HTTPForbidden
 	# Check to see whether or not we've received a Captcha challenge, and
 	# raise the CAPTCHAException if we have.
@@ -125,14 +125,16 @@ module GData
     # It contains the 'X-HTTP-Method-Override' line because there are times
     # that firewalls don't play nice with the HTTP PUT request.
     def put(path,entry)
-      @headers['X-HTTP-Method-Override'] = 'PUT'
-      @url.put(path,entry,@headers)
+      h = @headers.clone
+      h['X-HTTP-Method-Override'] = 'PUT'
+      @url.put(path,entry,h)
     end
     # Sends an HTTP DELETE request
     # 'X-HTTP-Method-Override' exists for the same reason as above.
     def delete(path)
-      @headers['X-HTTP-Method-Override'] = 'DELETE'
-      @url.delete(path,@headers)
+      h=@headers.clone
+      h['X-HTTP-Method-Override'] = 'DELETE'
+      @url.delete(path,h)
     end
   end
 end
