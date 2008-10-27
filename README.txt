@@ -6,6 +6,10 @@ GDataRuby
   
 Google GData APIs allow developers to build applications on top of the Google open APIs. This project aims to help with wrappers on top of GData, and higher level libraries on top of each API itself (e.g. Calendar, Spreadsheet, Blogger, etc).
 
+See more information about Google GData APIs at
+
+    http://code.google.com/apis/gdata/
+
 == FEATURES/PROBLEMS:
   
 To start out the API set isn't covered. The aim is to support the GData API itself, and then higher level classes for the various Google APIs.
@@ -14,6 +18,7 @@ Current support:
 
 * Google Account Authentication: Handle Google ClientLogin API
 * Google Spreadsheet Data API
+* Google Webmaster Tools API (partial support)
 
 Future support:
 
