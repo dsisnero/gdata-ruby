@@ -13,9 +13,10 @@ require 'date'
 require 'rexml/document'
 
 module GData #:nodoc:
+  
+  class WebmasterToolsError < StandardError; end #:nodoc:
+  
   class WebmasterTools < GData::Client
-    
-    class WebmasterToolsError < StandardError; end #:nodoc:
     
     FEED_URL = '/webmasters/tools/feeds/sites/'
     
@@ -86,6 +87,8 @@ module GData #:nodoc:
         when Net::HTTPCreated
           entry = REXML::Document.new(data).root
           return parse_site_entry(entry)
+        when Net::HTTPForbidden
+          raise WebmasterToolsError.new(data)
         else
           raise WebmasterToolsError
         end
@@ -97,7 +100,49 @@ module GData #:nodoc:
     # Remove site from account.
     def delete_site(site_id)
       if authenticated?
-        delete site_feed(site_id)
+        response, data = delete site_feed(site_id)
+        
+        case response
+        when Net::HTTPOK
+          return true
+        else
+          raise WebmasterToolsError.new(data)
+        end
+      else
+        raise NotAuthenticatedError
+      end
+    end
+    
+    # Initiates site ownership verification process in Webmaster Tools account.
+    #
+    # == Usage
+    #
+    # Method can be only 'htmlpage' or 'metatag', otherwise this method will raise WebmasterToolsError.
+    def verify_site(site_id, method)
+      raise WebmasterToolsError unless ['htmlpage', 'metatag'].include?(method)
+      
+      if authenticated?
+        content = '<entry xmlns="http://www.w3.org/2005/Atom" xmlns:wt="http://schemas.google.com/webmasters/tools/2007">'
+        content << '<id>' + site_id + '</id><category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/webmasters/tools/2007#site-info"/>'
+        content << '<wt:verification-method type="' + method + '" in-use="true"/>'
+        content << '</entry>'
+        response, data = put(site_feed(site_id), content)
+        
+        case response
+        when Net::HTTPOK
+          entry = REXML::Document.new(data).root
+          data = parse_site_entry(entry)
+          
+          if data[:verified] and data[:title] == site_id
+            return true
+          else
+            return false
+          end
+        when Net::HTTPNotFound
+          raise WebmasterToolsError.new(data)
+        else
+          raise WebmasterToolsError
+        end
       else
         raise NotAuthenticatedError
       end
@@ -107,7 +152,7 @@ module GData #:nodoc:
     
       # Private helper method to compose site feed based on site id.
       def site_feed(site_id)
-        FEED_URL + CGI::escape(site_id)
+        FEED_URL + CGI::escape(site_id || '')
       end
       
       # Parses site entry into hash from feed partial.
